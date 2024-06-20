@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-
+from pytube import YouTube
 @login_required
 def index(request):
     return render(request, 'index.html')
@@ -16,10 +16,13 @@ def generate_blog(request):
         try:
             data = json.loads(request.body)
             yt_link = data['link']
+            title = youtube_title(yt_link)
+            print(title)
             return JsonResponse({"content": yt_link})
         except (KeyError, json.JSONDecodeError):
             return JsonResponse({"error": "Invalid data sent!"}, status=400)
-        # Get the Youtube title
+        
+        
         
         # Get the transcript
         
@@ -30,6 +33,11 @@ def generate_blog(request):
         # return blog article as a response
     else:
         return JsonResponse({"error": "Invalid request method!"}, status=405)
+    
+def youtube_title(link):
+    youtube = YouTube(link)
+    youtube_title = youtube.title
+    return youtube_title
 
 def user_login(request):
     if request.method == 'POST':
