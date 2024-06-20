@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from pytube import YouTube
+from django.conf import settings
+import os
 @login_required
 def index(request):
     return render(request, 'index.html')
@@ -33,6 +35,24 @@ def generate_blog(request):
         # return blog article as a response
     else:
         return JsonResponse({"error": "Invalid request method!"}, status=405)
+    
+def get_transcription(link):
+    # audio_file = 
+    pass
+
+def download_audio(link):
+    youtube = YouTube(link)
+    filtered_video = youtube.streams.filter(only_audio=True)
+    audio_file = filtered_video.download(output_path=settings.MEIDA_ROOT)
+    
+    # Now, we need to save the file
+    base, ext = os.path().splitext(audio_file)
+    
+    # Now, we create a new mp3 file, then rename the original one
+    new_mp3_file = base + '.mp3'
+    os.rename(audio_file, new_mp3_file)
+    return new_mp3_file
+    
     
 def youtube_title(link):
     youtube = YouTube(link)
